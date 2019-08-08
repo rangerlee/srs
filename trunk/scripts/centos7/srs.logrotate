@@ -1,0 +1,10 @@
+/var/lib/srs/srs.log {
+    daily
+    copytruncate
+    nocompress
+    rotate 8
+    sharedscripts
+    postrotate
+    /bin/kill -1 `/bin/cat /var/lib/srs/srs.pid`
+    endscript
+}

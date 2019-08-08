@@ -105,6 +105,7 @@ const char* _srs_version = "XCORE-"RTMP_SIG_SRS_SERVER;
 
 #define SRS_CONF_DEFAULT_HTTP_MOUNT "[vhost]/"
 #define SRS_CONF_DEFAULT_HTTP_REMUX_MOUNT "[vhost]/[app]/[stream].flv"
+#define SRS_CONF_DEFAULT_HTTP_REMUX_CORS ""
 #define SRS_CONF_DEFAULT_HTTP_DIR SRS_CONF_DEFAULT_HLS_PATH
 #define SRS_CONF_DEFAULT_HTTP_AUDIO_FAST_CACHE 0
 
@@ -1886,7 +1887,7 @@ int SrsConfig::check_config()
             } else if (n == "http_remux") {
                 for (int j = 0; j < (int)conf->directives.size(); j++) {
                     string m = conf->at(j)->name.c_str();
-                    if (m != "enabled" && m != "mount" && m != "fast_cache" && m != "hstrs") {
+                    if (m != "enabled" && m != "mount" && m != "fast_cache" && m != "hstrs" && m != "cors") {
                         ret = ERROR_SYSTEM_CONFIG_INVALID;
                         srs_error("unsupported vhost http_remux directive %s, ret=%d", m.c_str(), ret);
                         return ret;
@@ -4365,6 +4366,26 @@ bool SrsConfig::get_vhost_http_remux_hstrs(string vhost)
     }
     
     return SRS_CONF_PERFER_FALSE(conf->arg0());
+}
+
+std::string SrsConfig::get_vhost_http_remux_cors(std::string vhost)
+{
+    SrsConfDirective* conf = get_vhost(vhost);
+    if(!conf) {
+        return SRS_CONF_DEFAULT_HTTP_REMUX_CORS;
+    }
+
+    conf = conf->get("http_remux");
+    if(!conf) {
+        return SRS_CONF_DEFAULT_HTTP_REMUX_CORS;
+    }
+
+    conf = conf->get("cors");
+    if(!conf || conf->arg0().empty()){
+        return SRS_CONF_DEFAULT_HTTP_REMUX_CORS;
+    }
+
+    return conf->arg0();
 }
 
 SrsConfDirective* SrsConfig::get_heartbeart()

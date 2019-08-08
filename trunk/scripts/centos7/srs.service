@@ -1,0 +1,15 @@
+[Unit]
+Description=SRS
+Documentation=https://github.com/ossrs/srs/wiki/v2_CN_Home
+After=network.target
+
+[Service]
+Type=forking
+ExecStartPre=/usr/local/bin/srs -t -c /etc/srs.conf
+ExecStart=/usr/local/bin/srs -c /etc/srs.conf
+ExecStop=/bin/kill -TERM $MAINPID
+ExecReload=/bin/kill -1 $MAINPID
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

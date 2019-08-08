@@ -56,7 +56,7 @@ using namespace std;
 #include <srs_app_server.hpp>
 #include <srs_app_recv_thread.hpp>
 #include <srs_app_http_hooks.hpp>
-
+#include <srs_app_statistic.hpp>
 #endif
 
 #include <srs_app_config.hpp>
@@ -500,6 +500,8 @@ int SrsLiveStream::do_serve_http(ISrsHttpResponseWriter* w, ISrsHttpMessage* r)
     ISrsStreamEncoder* enc = NULL;
     
     srs_assert(entry);
+    std::string cors = _srs_config->get_vhost_http_remux_cors(req->vhost);
+    if(!cors.empty()) w->header()->set("Access-Control-Allow-Origin", cors);
     if (srs_string_ends_with(entry->pattern, ".flv")) {
         w->header()->set_content_type("video/x-flv");
 #ifdef SRS_PERF_FAST_FLV_ENCODER
@@ -576,6 +578,13 @@ int SrsLiveStream::do_serve_http(ISrsHttpResponseWriter* w, ISrsHttpMessage* r)
         return ret;
     }
 
+    // update the statistic when source disconveried.
+    SrsStatistic* stat = SrsStatistic::instance();
+    if ((ret = stat->on_client(_srs_context->get_id(), req, NULL, SrsRtmpConnUnknown)) != ERROR_SUCCESS) {
+        srs_error("stat client failed. ret=%d", ret);
+        return ret;
+    }
+                             
     // TODO: free and erase the disabled entry after all related connections is closed.
     while (entry->enabled) {
         pprint->elapse();

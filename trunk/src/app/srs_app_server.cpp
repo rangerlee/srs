@@ -216,7 +216,7 @@ int SrsRtspListener::listen(string i, int p)
     
     srs_info("listen thread, current_cid=%d, "
         "listen at port=%d, type=%d, fd=%d started success, ep=%s:%d",
-        _srs_context->get_id(), port, type, fd, ip.c_str(), port);
+        _srs_context->get_id(), port, type, listener->fd(), ip.c_str(), port);
 
     srs_trace("%s listen at tcp://%s:%d, fd=%d", srs_listener_type2string(type).c_str(), ip.c_str(), port, listener->fd());
 
@@ -278,7 +278,7 @@ int SrsHttpFlvListener::listen(string i, int p)
     
     srs_info("listen thread, current_cid=%d, "
              "listen at port=%d, type=%d, fd=%d started success, ep=%s:%d",
-             _srs_context->get_id(), port, type, fd, ip.c_str(), port);
+             _srs_context->get_id(), port, type, listener->fd(), ip.c_str(), port);
     
     srs_trace("%s listen at tcp://%s:%d, fd=%d", srs_listener_type2string(type).c_str(), ip.c_str(), port, listener->fd());
     
