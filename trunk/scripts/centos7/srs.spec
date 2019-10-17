@@ -1,8 +1,8 @@
 Name:           srs
 Version:        2.0.263
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        SRS is an industrial-strength live streaming cluster, with the best conceptual integrity and the simplest implementation.
-Group:		Applications/Multimedia
+Group:          Applications/Multimedia
 License:        MIT
 URL:            https://github.com/rangerlee/srs.git
 Source0:        %{name}-%{version}.tar.gz

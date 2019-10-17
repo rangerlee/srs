@@ -99,7 +99,7 @@ public:
     SrsStatisticStream();
     virtual ~SrsStatisticStream();
 public:
-    virtual int dumps(std::stringstream& ss);
+    virtual int dumps(std::stringstream& ss, bool full_dump = true);
 public:
     /**
     * publish the stream.
@@ -228,7 +228,7 @@ public:
     /**
     * dumps the streams to sstream in json.
     */
-    virtual int dumps_streams(std::stringstream& ss);
+    virtual int dumps_streams(std::stringstream& ss, bool all_stream, bool full_dump);
     /**
      * dumps the clients to sstream in json.
      * @param start the start index, from 0.

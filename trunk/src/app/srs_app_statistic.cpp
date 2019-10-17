@@ -119,9 +119,23 @@ SrsStatisticStream::~SrsStatisticStream()
     srs_freep(kbps);
 }
 
-int SrsStatisticStream::dumps(stringstream& ss)
+int SrsStatisticStream::dumps(stringstream& ss, bool full_dump)
 {
     int ret = ERROR_SUCCESS;
+
+    if(!full_dump){
+        ss << SRS_JOBJECT_START
+            << SRS_JFIELD_STR("name", stream) << SRS_JFIELD_CONT
+            << SRS_JFIELD_STR("app", app) << SRS_JFIELD_CONT
+            << SRS_JFIELD_ORG("clients", nb_clients) << SRS_JFIELD_CONT
+            << SRS_JFIELD_OBJ("publish")
+                << SRS_JFIELD_BOOL("active", active)
+            << SRS_JOBJECT_END;
+
+        ss << SRS_JOBJECT_END;
+
+        return ret;
+    }
     
     ss << SRS_JOBJECT_START
             << SRS_JFIELD_ORG("id", id) << SRS_JFIELD_CONT
@@ -473,20 +487,22 @@ int SrsStatistic::dumps_vhosts(stringstream& ss)
     return ret;
 }
 
-int SrsStatistic::dumps_streams(stringstream& ss)
+int SrsStatistic::dumps_streams(stringstream& ss, bool all_stream, bool full_dump)
 {
     int ret = ERROR_SUCCESS;
     
     ss << SRS_JARRAY_START;
     std::map<int64_t, SrsStatisticStream*>::iterator it;
+    bool skip_cont = true;
     for (it = streams.begin(); it != streams.end(); it++) {
         SrsStatisticStream* stream = it->second;
-        
-        if (it != streams.begin()) {
-            ss << SRS_JFIELD_CONT;
-        }
 
-        if ((ret = stream->dumps(ss)) != ERROR_SUCCESS) {
+        // ignore nonactive streams data
+        if((!stream->nb_clients || !stream->active) && !all_stream) continue;
+
+        skip_cont ? skip_cont = false : ss << SRS_JFIELD_CONT;
+
+        if ((ret = stream->dumps(ss, full_dump)) != ERROR_SUCCESS) {
             return ret;
         }
     }

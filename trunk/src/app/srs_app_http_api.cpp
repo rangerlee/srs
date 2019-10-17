@@ -750,7 +750,11 @@ int SrsGoApiStreams::serve_http(ISrsHttpResponseWriter* w, ISrsHttpMessage* r)
         std::stringstream data;
         
         if (!stream) {
-            ret = stat->dumps_streams(data);
+            // default dump all streams, otherwise dump alive streams
+            // e.g. /api/v1/streams/?limit=all&msg=full defualt:limit=alive,msg=simple
+            bool all_stream = r->query_get("limit") == "all";
+            bool full_dump = r->query_get("msg") == "full";
+            ret = stat->dumps_streams(data, all_stream, full_dump);
             
             ss << SRS_JOBJECT_START
                     << SRS_JFIELD_ERROR(ret) << SRS_JFIELD_CONT
